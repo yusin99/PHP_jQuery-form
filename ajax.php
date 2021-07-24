@@ -1,41 +1,50 @@
 <?php
-require "sendemail.php";
+require "./sendemail.php";
+$ret = array();
+$ret['status'] = 'ok';
 $nom = htmlspecialchars($_POST["nom"]);
+$prenom = htmlspecialchars($_POST["prenom"]);
 $numero = htmlspecialchars($_POST["numero"]);
 $email = htmlspecialchars($_POST["email"]);
 $sujet = htmlspecialchars($_POST["sujet"]);
 $message = htmlspecialchars($_POST["message"]);
-
-/* vérifications */
-
-if (!isset($_POST['prenom']) || empty($_POST['prenom'])) {
-    die("Votre prénom est obligatoire");
+if (!isset($prenom) || empty($prenom)) {
+    $ret['error']['prenom'] = "Votre prénom est obligatoire";
+    $ret['status'] = 'error';
 }
-if (!isset($_POST['nom']) || empty($_POST['nom'])) {
-    die("Votre nom est obligatoire");
+if (!isset($nom) || empty($nom)) {
+    $ret['error']['nom'] = "Votre nom est obligatoire";
+    $ret['status'] = 'error';
 }
-if (!isset($_POST['email']) || empty($_POST['email'])) {
-    die("Votre email est obligatoire");
+if (!isset($email) || empty($email)) {
+    $ret['error']['email'] = "Votre email est obligatoire";
+    $ret['status'] = 'error';
 }
-if (!isset($_POST['sujet']) || empty($_POST['sujet'])) {
-    die("Le sujet est obligatoire");
+if (!isset($sujet) || empty($sujet)) {
+    $ret['error']['sujet'] = "Le sujet est obligatoire";
+    $ret['status'] = 'error';
 }
-if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
-    die("Le format de votre email est invalide");
+if (!isset($numero) || empty($numero)) {
+    $ret['error']['numero'] = "Le numero est obligatoire";
+    $ret['status'] = 'error';
 }
-if (!isset($_POST['numero']) || empty($_POST['numero'])) {
-    die("Votre number est obligatoire");
+if (!isset($message) || empty($message)) {
+    $ret['error']['message'] = "Le message est obligatoire";
+    $ret['status'] = 'error';
 }
-if (!is_numeric($_POST['numero'])) {
-    die("Votre number doit contenir que des chiffres");
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $ret['error']['email'] = "Mauvais format pour le email";
+    $ret['status'] = 'error';
 }
-if (!isset($_POST['message']) || empty($_POST['message'])) {
-    die("Votre message est obligatoire");
+if (!is_numeric($numero)) {
+    $ret['error']['numero'] = "Mauvais format pour le numero";
+    $ret['status'] = 'error';
 }
-
-$res = send_mail($email, $sujet, $message);
-if ($res) {
-    echo "Envoyé avec succès";
+if ($ret['status'] == 'ok') {
+    send_mail($email, $sujet, $message);
+    $ret['msg'] = "<span style='color:green'>Envoyé avec succès</span>";
 } else {
-    echo "Une erreur est survenue";
+    $ret['msg'] = "<span style='color:red'>Corriger les erreurs pour pouvoir continuer</span>";
 }
+echo json_encode($ret);
+die;

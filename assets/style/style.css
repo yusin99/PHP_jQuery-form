@@ -146,6 +146,12 @@ label {
     ),
     linear-gradient(45deg, rgb(83, 91, 235), rgb(76, 11, 174));
 }
+.error {
+  color: red;
+}
+#msg {
+  padding: 10px;
+}
 #error {
   font-weight: 700;
   font-size: 40px;

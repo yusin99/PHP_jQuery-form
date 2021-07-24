@@ -12,26 +12,31 @@
     <script>
       $(document).ready(function () {
         $("#form").submit(function (e) {
+          $(".error").html("");
           e.preventDefault();
           $.ajax({
             method: "POST",
             url: "ajax.php",
-            data: $("#form").serialize(),
-            dataType: "HTML",
+            data: $("form").serialize(),
+            dataType: "JSON",
             beforeSend: function () {
               $("#loader").removeClass("hidden");
             },
             success: (data) => {
-              if (data != "Envoyé avec succès") {
-                $("#error").html("");
-                $("#errorColor").addClass("bg-danger");
-                $("#error").html(data).fadeIn();
+              if (data.status === "error") {
+                if (data.error) {
+                  for (var prop in data.error) {
+                    console.log(data.error[prop]);
+                    $("#" + prop + "-error").html(data.error[prop]);
+                  }
+                }
               } else {
                 $("#error").html("");
                 $("#form").fadeOut(() => {
                   $("#errorColor").removeClass("bg-danger");
                   $("#errorColor").addClass("bg-success");
                   $("#reussite").html(data).fadeIn();
+                  $("#msg").html(data.msg);
                   $("#finish").removeAttr("hidden");
                 });
               }
@@ -70,7 +75,7 @@
               id="prenom"
               placeholder="Prenom"
               name="prenom"
-            />
+            /><span id="prenom-error" class="error"></span>
           </div>
           <div class="col-md-6">
             <label for="nom" class="form-label">Nom</label>
@@ -80,7 +85,7 @@
               id="nom"
               placeholder="Nom"
               name="nom"
-            />
+            /><span id="nom-error" class="error"></span>
           </div>
           <div class="col-12">
             <label for="email" class="form-label">Email</label>
@@ -90,7 +95,7 @@
               id="email"
               placeholder="aaaa@aaa.aa"
               name="email"
-            />
+            /><span id="email-error" class="error"></span>
           </div>
           <div class="col-12">
             <label for="numero" class="form-label">Numero</label>
@@ -100,7 +105,7 @@
               id="numero"
               placeholder="0623857048"
               name="numero"
-            />
+            /><span id="numero-error" class="error"></span>
           </div>
           <div class="col-12">
             <label for="sujet" class="form-label">Sujet</label>
@@ -110,7 +115,7 @@
               id="sujet"
               placeholder="RDV"
               name="sujet"
-            />
+            /><span id="sujet-error" class="error"></span>
           </div>
           <div class="col-md-12 ms-2">
             <label for="message" class="form-label">Message</label>
@@ -123,6 +128,7 @@
               name="message"
             ></textarea>
           </div>
+          <span id="message-error" class="error"></span>
           <div class="col-12">
             <button type="submit" class="btn btn-primary">Envoyer</button>
           </div>
